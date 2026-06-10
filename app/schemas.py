@@ -1,0 +1,15 @@
+from pydantic import BaseModel
+
+class BuildingInput(BaseModel):
+    GHGEmissionsIntensity: float
+    YearBuilt: int
+    BuildingAge: int
+    NumberofFloors: int
+    Log_Surface: int
+    PropertyGFATotal: float
+    LargestPropertyUseTypeGFA: float
+    PropertyGFABuilding_s: float
+    BuildingType: str
+    PrimaryPropertyType: str
+    City: str
+    State: str
