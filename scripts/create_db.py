@@ -3,4 +3,4 @@ from app.models import Base
 
 Base.metadata.create_all(bind=engine)
 
-print("Base créée")
+print("Tables créées")

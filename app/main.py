@@ -1,7 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
 
 from app.schemas import BuildingInput
 from app.ml_model import predict_energy
+from app.database import get_db
+from app.crud import create_prediction
 
 app = FastAPI(title="Seattle Energy API")
 
@@ -12,7 +15,10 @@ def home():
 
 
 @app.post("/predict")
-def predict(building: BuildingInput):
+def predict(
+    building: BuildingInput,
+    db: Session = Depends(get_db)
+):
 
     features = {
         "GHGEmissionsIntensity": building.GHGEmissionsIntensity,
@@ -30,6 +36,12 @@ def predict(building: BuildingInput):
     }
 
     prediction = predict_energy(features)
+
+    create_prediction(
+        db=db,
+        data=features,
+        prediction=prediction
+    )
 
     return {
         "prediction_kbtu": prediction
