@@ -5,7 +5,7 @@ class BuildingInput(BaseModel):
     YearBuilt: int
     BuildingAge: int
     NumberofFloors: int
-    Log_Surface: int
+    Log_Surface: float
     PropertyGFATotal: float
     LargestPropertyUseTypeGFA: float
     PropertyGFABuilding_s: float

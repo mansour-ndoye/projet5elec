@@ -3,8 +3,8 @@ import pandas as pd
 
 model = joblib.load("data/model.pkl")
 
-def predict_energy(data):
-    df = pd.DataFrame([data])
+def predict_energy(features):
+    df = pd.DataFrame([features])
 
     df = df.rename(
         columns={

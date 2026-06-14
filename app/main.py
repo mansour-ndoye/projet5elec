@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.schemas import BuildingInput
 from app.ml_model import predict_energy
 from app.database import get_db
-from app.crud import create_prediction
+from app.crud import save_prediction
 
 app = FastAPI(title="Seattle Energy API")
 
@@ -37,9 +37,9 @@ def predict(
 
     prediction = predict_energy(features)
 
-    create_prediction(
+    save_prediction(
         db=db,
-        data=features,
+        data=building,
         prediction=prediction
     )
 
