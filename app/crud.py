@@ -3,7 +3,6 @@ from app.models import PredictionLog
 def save_prediction(db, data, prediction):
 
     row = PredictionLog(
-        GHGEmissionsIntensity=data.GHGEmissionsIntensity,
         YearBuilt=data.YearBuilt,
         BuildingAge=data.BuildingAge,
         NumberofFloors=data.NumberofFloors,
