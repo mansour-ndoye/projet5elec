@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 class BuildingInput(BaseModel):
-    GHGEmissionsIntensity: float
+
     YearBuilt: int
     BuildingAge: int
     NumberofFloors: int
@@ -13,3 +13,8 @@ class BuildingInput(BaseModel):
     PrimaryPropertyType: str
     City: str
     State: str
+
+
+class PredictionResponse(BaseModel):
+
+    prediction: float

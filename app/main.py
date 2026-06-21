@@ -5,6 +5,9 @@ from app.schemas import BuildingInput
 from app.ml_model import predict_energy
 from app.database import get_db
 from app.crud import save_prediction
+from app.app_gradio import gradio_interface
+import gradio as gr
+
 
 app = FastAPI(title="Seattle Energy API")
 
@@ -21,7 +24,6 @@ def predict(
 ):
 
     features = {
-        "GHGEmissionsIntensity": building.GHGEmissionsIntensity,
         "YearBuilt": building.YearBuilt,
         "BuildingAge": building.BuildingAge,
         "NumberofFloors": building.NumberofFloors,
@@ -46,3 +48,8 @@ def predict(
     return {
         "prediction_kbtu": prediction
     }
+app = gr.mount_gradio_app(
+    app,
+    gradio_interface,
+    path="/gradio"
+)

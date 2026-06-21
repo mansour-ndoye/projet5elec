@@ -3,7 +3,6 @@ from app.ml_model import predict_energy
 def test_prediction():
 
     data = {
-        "GHGEmissionsIntensity": 4.0,
         "YearBuilt": 2005,
         "BuildingAge": 21,
         "NumberofFloors": 5,

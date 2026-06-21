@@ -6,7 +6,6 @@ class PredictionLog(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    GHGEmissionsIntensity = Column(Float)
     YearBuilt = Column(Integer)
     BuildingAge = Column(Integer)
     NumberofFloors = Column(Integer)
