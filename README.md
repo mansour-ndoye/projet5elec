@@ -27,34 +27,55 @@ L'application expose le modèle via une API REST développée avec FastAPI. Tout
 
 ```text
 projet5elec/
-│
+
 ├── app/
+│   ├── app_gradio.py
+│   ├── crud.py
+│   ├── database.py
 │   ├── main.py
 │   ├── ml_model.py
-│   ├── schemas.py
-│   ├── database.py
 │   ├── models.py
-│   └── crud.py
+│   └── schemas.py
 │
 ├── data/
+│   ├── energie.ipynb
 │   └── model.pkl
 │
 ├── scripts/
-│   └── create_db.py
+│   ├── create_db.py
+│   └── load_dataset.py
 │
 ├── tests/
 │   ├── test_api.py
-│   ├── test_model.py
 │   ├── test_database.py
-│   └── test_dummy.py
+│   └── test_model.py
 │
 ├── requirements.txt
+├── .gitignore
 └── README.md
 ```
 
 ---
 
 ## Modèle de Machine Learning
+
+Le modèle a été entraîné afin de prédire la variable cible :
+
+SiteEnergyUse(kBtu)
+
+Variables utilisées :
+
+YearBuilt
+BuildingAge
+NumberofFloors
+Log_Surface
+PropertyGFATotal
+LargestPropertyUseTypeGFA
+PropertyGFABuilding(s)
+BuildingType
+PrimaryPropertyType
+City
+State
 
 ### Modèle utilisé
 
@@ -82,6 +103,24 @@ projet5elec/
 ---
 
 ## Installation
+Cloner le dépôt :
+
+git clone https://github.com/mansour-ndoye/projet5elec.git
+
+cd projet5elec
+
+Créer un environnement virtuel :
+
+python -m venv venv
+
+Activer l'environnement :
+
+Windows :
+venv\Scripts\activate
+
+Installer les dépendances :
+
+pip install -r requirements.txt
 
 ### Cloner le dépôt
 
@@ -152,7 +191,7 @@ uvicorn app.main:app --reload
 
 API disponible sur :
 
-```text
+```
 http://127.0.0.1:8000
 ```
 
@@ -162,13 +201,14 @@ http://127.0.0.1:8000
 
 Swagger UI :
 
-```text
+```
+
 http://127.0.0.1:8000/docs
 ```
 
 Documentation OpenAPI :
 
-```text
+```
 http://127.0.0.1:8000/redoc
 ```
 
@@ -243,7 +283,7 @@ TOTAL 77 0 100%
 
 ---
 
-## Intégration Continue
+## Intégration Continue CI/CD
 
 Le projet utilise GitHub Actions pour :
 
