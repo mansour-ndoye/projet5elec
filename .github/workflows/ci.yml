@@ -1,4 +1,5 @@
-name: CI Pipeline
+name: CI/CD Pipeline
+
 on:
   push:
     branches:
@@ -7,7 +8,9 @@ on:
   pull_request:
     branches:
       - master
+
 jobs:
+
   tests:
     runs-on: ubuntu-latest
 
@@ -28,14 +31,36 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+
       - name: Run tests
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           pytest
+
+  deploy:
+
+    needs: tests
+
+    if: github.ref == 'refs/heads/master'
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Hugging Face
+        uses: nateraw/huggingface-sync-action@v0.0.5
+        with:
+          github_repo_id: mansour-ndoye/projet5elec
+          huggingface_repo_id: ManouDig/consommation
+          hf_token: ${{ secrets.HF_TOKEN }}
