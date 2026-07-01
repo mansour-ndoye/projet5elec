@@ -1,7 +1,14 @@
 import joblib
 import pandas as pd
+from huggingface_hub import hf_hub_download
 
-model = joblib.load("data/model.pkl")
+model_path = hf_hub_download(
+    repo_id="ManouDig/energie",
+    filename="model.pkl"
+)
+
+
+model = joblib.load(model_path)
 
 def predict_energy(features):
     df = pd.DataFrame([features])
