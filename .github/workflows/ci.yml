@@ -45,7 +45,6 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           pytest
-
   deploy:
     needs: tests
     if: github.ref == 'refs/heads/master'
@@ -69,12 +68,12 @@ jobs:
 
           rsync -av --delete \
             --exclude ".git" \
-            ./ /tmp/hf-space/
+            --exclude ".github" \
+            --exclude "hf-space" \
+            ./ hf-space/
 
-          cd /tmp/hf-space
+          cd hf-space
 
           git add .
-
           git commit -m "Automatic deployment" || true
-
           git push
