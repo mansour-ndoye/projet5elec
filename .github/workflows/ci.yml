@@ -47,20 +47,31 @@ jobs:
           pytest
 
   deploy:
+  needs: tests
+  if: github.ref == 'refs/heads/master'
+  runs-on: ubuntu-latest
 
-    needs: tests
+  steps:
+    - uses: actions/checkout@v4
 
-    if: github.ref == 'refs/heads/master'
+    - name: Deploy to Hugging Face
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
 
-    runs-on: ubuntu-latest
+      run: |
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "GitHub Actions"
 
-    steps:
+        git clone https://ManouDig:$HF_TOKEN@huggingface.co/spaces/ManouDig/consommation hf-space
 
-      - uses: actions/checkout@v4
+        rsync -av --delete \
+          --exclude ".git" \
+          ./ hf-space/
 
-      - name: Deploy to Hugging Face
-        uses: nateraw/huggingface-sync-action@v0.0.5
-        with:
-          github_repo_id: mansour-ndoye/projet5elec
-          huggingface_repo_id: ManouDig/consommation
-          hf_token: ${{ secrets.HF_TOKEN }}
+        cd hf-space
+
+        git add .
+
+        git commit -m "Automatic deployment" || true
+
+        git push
