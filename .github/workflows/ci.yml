@@ -46,32 +46,35 @@ jobs:
         run: |
           pytest
 
-  deploy:
-  needs: tests
-  if: github.ref == 'refs/heads/master'
-  runs-on: ubuntu-latest
+ deploy:
+    needs: tests
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
 
-  steps:
-    - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-    - name: Deploy to Hugging Face
-      env:
-        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      - name: Install rsync
+        run: sudo apt-get update && sudo apt-get install -y rsync
 
-      run: |
-        git config --global user.email "github-actions@github.com"
-        git config --global user.name "GitHub Actions"
+      - name: Deploy to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
 
-        git clone https://ManouDig:$HF_TOKEN@huggingface.co/spaces/ManouDig/consommation hf-space
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
 
-        rsync -av --delete \
-          --exclude ".git" \
-          ./ hf-space/
+          git clone https://ManouDig:$HF_TOKEN@huggingface.co/spaces/ManouDig/consommation hf-space
 
-        cd hf-space
+          rsync -av --delete \
+            --exclude ".git" \
+            ./ hf-space/
 
-        git add .
+          cd hf-space
 
-        git commit -m "Automatic deployment" || true
+          git add .
 
-        git push
+          git commit -m "Automatic deployment" || true
+
+          git push
