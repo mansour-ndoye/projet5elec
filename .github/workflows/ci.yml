@@ -69,9 +69,9 @@ jobs:
 
           rsync -av --delete \
             --exclude ".git" \
-            ./ hf-space/
+            ./ /tmp/hf-space/
 
-          cd hf-space
+          cd /tmp/hf-space
 
           git add .
 
