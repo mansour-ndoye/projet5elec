@@ -46,7 +46,7 @@ jobs:
         run: |
           pytest
 
- deploy:
+  deploy:
     needs: tests
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
