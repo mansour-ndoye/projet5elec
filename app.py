@@ -1,3 +1,2 @@
-from app.app_gradio import gradio_interface
-
+from app.main import app
 gradio_interface.launch()
