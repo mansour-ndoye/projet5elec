@@ -52,5 +52,5 @@ def predict(
 app = gr.mount_gradio_app(
     app,
     gradio_interface,
-    path="/"
+    path="/gradio"
 )
