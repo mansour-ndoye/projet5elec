@@ -7,9 +7,11 @@ from app.database import get_db
 from app.crud import save_prediction
 from app.app_gradio import gradio_interface
 import gradio as gr
-from app.database import Base, engine
 
 app = FastAPI(title="Seattle Energy API")
+from app.database import Base, engine
+from app import models
+
 Base.metadata.create_all(bind=engine)
 
 @app.get("/")
@@ -38,7 +40,12 @@ def predict(
     }
 
     prediction = predict_energy(features)
-
+    save_prediction(
+        db=db,
+        building=building,
+        prediction=prediction
+    )
+    
     return {
         "prediction_kbtu": prediction
     }
