@@ -38,13 +38,7 @@ def predict(
     }
 
     prediction = predict_energy(features)
-
-    save_prediction(
-        db=db,
-        data=building,
-        prediction=prediction
-    )
-
+    
     return {
         "prediction_kbtu": prediction
     }
