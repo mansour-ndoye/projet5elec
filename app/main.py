@@ -18,13 +18,10 @@ from app import models
 
 Base.metadata.create_all(bind=engine)
 
-@app.get("/")
+@app.get("/", include_in_schema=False)
 def home():
-    return {
-        "message": "Seattle Energy Prediction API",
-        "documentation": "/docs",
-        "gradio_interface": "/gradio"
-    }
+    return RedirectResponse(url="/gradio")
+    
 @app.post("/predict")
 def predict(
     building: BuildingInput,
