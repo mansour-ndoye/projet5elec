@@ -33,32 +33,34 @@ def predict(
 
     prediction = predict_energy(features)
 
-    return round(prediction, 2)
+    return f"Estimated annual energy consumption : {prediction:,.2f} kBtu"
 
 
 gradio_interface = gr.Interface(
 
     fn=predict,
 
-    title="🏢 Seattle Energy Prediction",
+    title="🏢 Seattle Building Energy Prediction",
 
     description="""
-    Estimation de la consommation énergétique d'un bâtiment
-    à partir de ses caractéristiques.
-    """,
+Predict the annual energy consumption of a Seattle building
+from its physical characteristics.
+""",
+
+    theme=gr.themes.Soft(),
 
     inputs=[
 
         gr.Number(
-            label="Année de construction"
+            label="Year Built"
         ),
 
         gr.Number(
-            label="Âge du bâtiment"
+            label="Building Age"
         ),
 
         gr.Number(
-            label="Nombre d'étages"
+            label="Number of Floors"
         ),
 
         gr.Number(
@@ -66,7 +68,7 @@ gradio_interface = gr.Interface(
         ),
 
         gr.Number(
-            label="Surface totale (sq ft)"
+            label="Total Property Area (sq ft)"
         ),
 
         gr.Number(
@@ -74,43 +76,70 @@ gradio_interface = gr.Interface(
         ),
 
         gr.Number(
-            label="Property GFA Building"
+            label="Building Area (sq ft)"
         ),
 
         gr.Dropdown(
-
             choices=[
                 "Campus",
                 "NonResidential",
                 "Multifamily"
             ],
-
-            label="Type de bâtiment"
+            label="Building Type"
         ),
 
         gr.Textbox(
-            label="Type principal de propriété"
+            label="Primary Property Type"
         ),
 
         gr.Textbox(
             value="Seattle",
-            label="Ville"
+            label="City"
         ),
 
         gr.Textbox(
             value="WA",
-            label="État"
+            label="State"
         ),
 
     ],
 
-    outputs=gr.Number(
-        label="Prédiction (kBtu)"
+    outputs=gr.Textbox(
+        label="Prediction"
     ),
 
-    flagging_mode="never",
+    examples=[
+        [
+            1992,
+            24,
+            3,
+            13.111982,
+            494835,
+            757027,
+            494835,
+            "Campus",
+            "Mixed Use Property",
+            "Seattle",
+            "WA"
+        ],
+        [
+            1985,
+            40,
+            5,
+            12.5,
+            350000,
+            250000,
+            300000,
+            "NonResidential",
+            "Office",
+            "Seattle",
+            "WA"
+        ]
+    ],
 
-    submit_btn="Prédire",
+    submit_btn="Predict",
 
-    clear_btn="Réinitialiser",
+    clear_btn="Reset",
+
+    flagging_mode="never"
 )
