@@ -141,7 +141,6 @@ Remplissez les informations du bâtiment puis cliquez sur **Prédire**.
             "WA"
         ]
     ],
-    theme=gr.themes.Soft(),
 
     submit_btn="Predict",
 
