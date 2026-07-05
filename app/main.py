@@ -7,7 +7,7 @@ from app.database import get_db
 from app.crud import save_prediction
 from app.app_gradio import gradio_interface
 import gradio as gr
-
+from fastapi.responses import RedirectResponse
 app = FastAPI(
     title="Seattle Energy Prediction API",
     description="API permettant de prédire la consommation énergétique des bâtiments de Seattle.",
