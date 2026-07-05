@@ -20,8 +20,8 @@ Base.metadata.create_all(bind=engine)
 
 @app.get("/", include_in_schema=False)
 def home():
-    return RedirectResponse(url="/gradio")
-    
+    return RedirectResponse(url="/gradio/")
+
 @app.post("/predict")
 def predict(
     building: BuildingInput,
