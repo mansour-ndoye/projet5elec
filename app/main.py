@@ -8,7 +8,11 @@ from app.crud import save_prediction
 from app.app_gradio import gradio_interface
 import gradio as gr
 
-app = FastAPI(title="Seattle Energy API")
+app = FastAPI(
+    title="Seattle Energy Prediction API",
+    description="API permettant de prédire la consommation énergétique des bâtiments de Seattle.",
+    version="1.0.0"
+)
 from app.database import Base, engine
 from app import models
 
@@ -16,9 +20,11 @@ Base.metadata.create_all(bind=engine)
 
 @app.get("/")
 def home():
-    return {"message": "API Energy Prediction"}
-
-
+    return {
+        "message": "Seattle Energy Prediction API",
+        "documentation": "/docs",
+        "gradio_interface": "/gradio"
+    }
 @app.post("/predict")
 def predict(
     building: BuildingInput,
@@ -46,8 +52,9 @@ def predict(
         prediction=prediction
     )
 
+
     return {
-        "prediction_kbtu": prediction
+        "prediction_kbtu": round(prediction, 2)
     }
 app = gr.mount_gradio_app(
     app,

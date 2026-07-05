@@ -33,7 +33,7 @@ def predict(
 
     prediction = predict_energy(features)
 
-    return f"Estimated annual energy consumption : {prediction:,.2f} kBtu"
+    return f"{prediction:,.2f} kBtu/an"
 
 
 gradio_interface = gr.Interface(
@@ -43,8 +43,13 @@ gradio_interface = gr.Interface(
     title="🏢 Seattle Building Energy Prediction",
 
     description="""
-Predict the annual energy consumption of a Seattle building
-from its physical characteristics.
+Cette application prédit la consommation énergétique annuelle
+des bâtiments non résidentiels de Seattle.
+
+Le modèle de Machine Learning a été entraîné avec un
+Random Forest Regressor.
+
+Remplissez les informations du bâtiment puis cliquez sur **Prédire**.
 """,
 
     theme=gr.themes.Soft(),
@@ -136,6 +141,9 @@ from its physical characteristics.
             "WA"
         ]
     ],
+    theme=gr.themes.Soft(),
+
+    article="""
 
     submit_btn="Predict",
 
