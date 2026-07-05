@@ -9,32 +9,39 @@ python_version: "3.11"
 app_file: app.py
 pinned: false
 ---
-# Seattle Energy Prediction API
+
+# ⚡ Seattle Energy Prediction API
 
 ## Présentation
 
 Ce projet a pour objectif de déployer un modèle de Machine Learning permettant de prédire la consommation énergétique de bâtiments non résidentiels de la ville de Seattle.
 
-L'application expose le modèle via une API REST développée avec FastAPI. Toutes les prédictions sont enregistrées dans une base de données PostgreSQL afin d'assurer la traçabilité des échanges entre l'API et le modèle.
+L'application expose le modèle via une API REST développée avec **FastAPI** et propose également une interface utilisateur **Gradio**.
+
+Le modèle de Machine Learning est stocké sur **Hugging Face Hub** et téléchargé automatiquement au démarrage de l'application.
+
+Toutes les prédictions sont enregistrées dans une base de données **SQLite** à l'aide de SQLAlchemy.
 
 ---
 
-## Technologies utilisées
+# Technologies utilisées
 
-* Python 3.13
+* Python 3.11
 * FastAPI
+* Gradio
 * Pydantic
 * Scikit-learn
 * Pandas
-* PostgreSQL
 * SQLAlchemy
+* SQLite
+* Hugging Face Hub
+* GitHub Actions
 * Pytest
 * Pytest-cov
-* GitHub Actions
 
 ---
 
-## Architecture du projet
+# Architecture du projet
 
 ```text
 projet5elec/
@@ -46,55 +53,32 @@ projet5elec/
 │   ├── main.py
 │   ├── ml_model.py
 │   ├── models.py
-│   └── schemas.py
+│   ├── schemas.py
+│   └── __init__.py
 │
 ├── data/
-│   ├── energie.ipynb
-│   └── model.pkl
+│   └── energie.ipynb
 │
 ├── scripts/
-│   ├── create_db.py
-│   └── load_dataset.py
 │
 ├── tests/
-│   ├── test_api.py
-│   ├── test_database.py
-│   └── test_model.py
 │
+├── app.py
 ├── requirements.txt
-├── .gitignore
-└── README.md
+├── README.md
+└── .gitignore
 ```
 
 ---
 
-## Modèle de Machine Learning
+# Modèle de Machine Learning
 
-Le modèle a été entraîné afin de prédire la variable cible :
+Le modèle prédit :
 
-SiteEnergyUse(kBtu)
+**SiteEnergyUse(kBtu)**
 
 Variables utilisées :
 
-YearBuilt
-BuildingAge
-NumberofFloors
-Log_Surface
-PropertyGFATotal
-LargestPropertyUseTypeGFA
-PropertyGFABuilding(s)
-BuildingType
-PrimaryPropertyType
-City
-State
-
-### Modèle utilisé
-
-* RandomForestRegressor
-
-### Variables d'entrée
-
-* GHGEmissionsIntensity
 * YearBuilt
 * BuildingAge
 * NumberofFloors
@@ -107,41 +91,28 @@ State
 * City
 * State
 
-### Variable cible
+Le modèle est un :
 
-* Consommation énergétique du bâtiment (kBtu)
+**RandomForestRegressor**
+
+Le fichier `model.pkl` est hébergé sur **Hugging Face Hub** puis téléchargé automatiquement grâce à :
+
+* huggingface_hub
+* joblib
 
 ---
 
-## Installation
+# Installation
+
 Cloner le dépôt :
 
+```bash
 git clone https://github.com/mansour-ndoye/projet5elec.git
-
 cd projet5elec
+```
 
 Créer un environnement virtuel :
 
-python -m venv venv
-
-Activer l'environnement :
-
-Windows :
-venv\Scripts\activate
-
-Installer les dépendances :
-
-pip install -r requirements.txt
-
-### Cloner le dépôt
-
-```bash
-git clone https://github.com/mansour-ndoye/projet5elec.git
-cd projet5elec
-```
-
-### Créer un environnement virtuel
-
 Windows :
 
 ```bash
@@ -149,14 +120,14 @@ python -m venv venv
 venv\Scripts\activate
 ```
 
-Linux / Mac :
+Linux / macOS :
 
 ```bash
 python -m venv venv
 source venv/bin/activate
 ```
 
-### Installer les dépendances
+Installer les dépendances :
 
 ```bash
 pip install -r requirements.txt
@@ -164,159 +135,140 @@ pip install -r requirements.txt
 
 ---
 
-## Configuration PostgreSQL
+# Base de données
 
-Créer une base de données PostgreSQL :
+Le projet utilise **SQLite**.
 
-```sql
-CREATE DATABASE energie_db;
-```
+La base est créée automatiquement au premier lancement.
 
-Configurer les variables de connexion dans le fichier `.env`.
-
-Exemple :
-
-```env
-DATABASE_URL=postgresql://postgres:password@localhost/energie_db
-```
+Aucune installation supplémentaire n'est nécessaire.
 
 ---
 
-## Création des tables
-
-Exécuter :
+# Lancement de l'application
 
 ```bash
-python -m scripts.create_db
+python app.py
 ```
 
-Cette commande crée automatiquement les tables définies dans les modèles SQLAlchemy.
-
----
-
-## Lancement de l'API
+ou
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-API disponible sur :
-
-```
-http://127.0.0.1:8000
-```
-
 ---
 
-## Documentation de l'API
+# Documentation de l'API
 
-Swagger UI :
+Swagger :
 
-```
-
+```text
 http://127.0.0.1:8000/docs
 ```
 
-Documentation OpenAPI :
+ReDoc :
 
-```
+```text
 http://127.0.0.1:8000/redoc
 ```
 
 ---
 
-## Exemple d'utilisation
+# Interface Gradio
 
-### Requête
+Lorsque l'application est déployée sur Hugging Face Spaces, une interface Gradio est disponible en complément de l'API.
+
+Elle permet de réaliser une prédiction directement depuis un navigateur.
+
+---
+
+# Exemple d'appel API
 
 POST `/predict`
 
 ```json
 {
-  "GHGEmissionsIntensity": 4.0,
-  "YearBuilt": 2005,
-  "BuildingAge": 21,
-  "NumberofFloors": 5,
-  "Log_Surface": 11,
-  "PropertyGFATotal": 100000,
-  "LargestPropertyUseTypeGFA": 80000,
-  "PropertyGFABuilding_s": 95000,
-  "BuildingType": "NonResidential",
-  "PrimaryPropertyType": "Office",
+  "YearBuilt": 1992,
+  "BuildingAge": 24,
+  "NumberofFloors": 3,
+  "Log_Surface": 13.111982,
+  "PropertyGFATotal": 494835,
+  "LargestPropertyUseTypeGFA": 757027,
+  "PropertyGFABuilding_s": 494835,
+  "BuildingType": "Campus",
+  "PrimaryPropertyType": "Mixed Use Property",
   "City": "Seattle",
   "State": "WA"
 }
 ```
 
-### Réponse
+Réponse :
 
 ```json
 {
-  "prediction_kbtu": 123456.78
+  "prediction_kbtu": 71888207.72
 }
 ```
 
 ---
 
-## Traçabilité des prédictions
+# Traçabilité des prédictions
 
-Chaque appel à l'endpoint `/predict` suit le processus suivant :
+Chaque appel au endpoint `/predict` suit les étapes suivantes :
 
-1. Réception et validation des données via Pydantic.
-2. Enregistrement des données d'entrée dans PostgreSQL.
-3. Exécution de la prédiction via le modèle Machine Learning.
-4. Enregistrement de la prédiction dans PostgreSQL.
-5. Retour de la prédiction à l'utilisateur.
-
-Cette approche garantit une traçabilité complète des échanges.
+1. Validation des données avec Pydantic.
+2. Création des variables d'entrée.
+3. Chargement du modèle Machine Learning.
+4. Calcul de la prédiction.
+5. Enregistrement de la prédiction dans SQLite.
+6. Retour de la réponse au client.
 
 ---
 
-## Tests
+# Tests
 
-### Exécuter tous les tests
+Lancer tous les tests :
 
 ```bash
-pytest -v
+pytest
 ```
 
-### Rapport de couverture
+Couverture :
 
 ```bash
 pytest --cov=app
 ```
 
-Résultat obtenu :
-
-```text
-TOTAL 77 0 100%
-```
+Tous les tests passent avec succès.
 
 ---
 
-## Intégration Continue CI/CD
+# Déploiement CI/CD
 
-Le projet utilise GitHub Actions pour :
+Le projet est déployé automatiquement grâce à GitHub Actions et Hugging Face Spaces.
 
-* exécuter automatiquement les tests ;
-* vérifier la qualité du code ;
-* garantir la stabilité du projet à chaque modification.
+À chaque `git push` :
 
----
+* les tests sont exécutés automatiquement ;
+* le projet est vérifié ;
+* Hugging Face redéploie automatiquement la nouvelle version de l'application.
 
-## Maintenance du modèle
-
-Pour mettre à jour le modèle :
-
-1. Réentraîner le modèle à partir du notebook d'entraînement.
-2. Générer un nouveau fichier `model.pkl`.
-3. Remplacer le fichier dans le dossier `data/`.
-4. Exécuter la suite de tests.
-5. Déployer la nouvelle version.
+Cette approche met en œuvre une chaîne **CI/CD** garantissant la qualité et la disponibilité du projet.
 
 ---
 
-## Auteur
+# Déploiement
 
-Projet réalisé dans le cadre du parcours OpenClassrooms - Ingénieur Intelligence Artificielle.
+Le projet est disponible sur :
 
+* API FastAPI
+* Documentation Swagger
+* Interface Gradio
+* Hugging Face Hub pour le stockage du modèle
+
+---
+
+# Auteur
+
+Projet réalisé dans le cadre du parcours **OpenClassrooms – Ingénieur Intelligence Artificielle**.
