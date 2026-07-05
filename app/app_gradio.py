@@ -143,8 +143,6 @@ Remplissez les informations du bâtiment puis cliquez sur **Prédire**.
     ],
     theme=gr.themes.Soft(),
 
-    article="""
-
     submit_btn="Predict",
 
     clear_btn="Reset",
