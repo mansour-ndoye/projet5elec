@@ -62,3 +62,4 @@ app = gr.mount_gradio_app(
     app,
     gradio_interface,
     path="/gradio"
+    )
