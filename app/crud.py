@@ -1,8 +1,16 @@
-from app.models import PredictionLog
+import time
+
+from app.models import Prediction, Monitoring, Dataset
+
 
 def save_prediction(db, data, prediction):
 
-    row = PredictionLog(
+    start = time.time()
+
+    # -----------------------------
+    # Table predictions
+    # -----------------------------
+    prediction_row = Prediction(
         YearBuilt=data.YearBuilt,
         BuildingAge=data.BuildingAge,
         NumberofFloors=data.NumberofFloors,
@@ -14,11 +22,39 @@ def save_prediction(db, data, prediction):
         PrimaryPropertyType=data.PrimaryPropertyType,
         City=data.City,
         State=data.State,
-        prediction=prediction
+        prediction_kbtu=prediction
     )
 
-    db.add(row)
+    db.add(prediction_row)
     db.commit()
-    db.refresh(row)
+    db.refresh(prediction_row)
 
-    return row
+    # Temps de réponse
+    response_time = round((time.time() - start) * 1000, 2)
+
+    # -----------------------------
+    # Table monitoring
+    # -----------------------------
+    monitoring_row = Monitoring(
+        prediction_id=prediction_row.prediction_id,
+        response_time_ms=response_time,
+        model_version="RandomForest_v1",
+        status="SUCCESS"
+    )
+
+    db.add(monitoring_row)
+
+    # -----------------------------
+    # Table dataset
+    # -----------------------------
+    dataset_row = Dataset(
+        prediction_id=prediction_row.prediction_id,
+        source="Seattle Open Data",
+        data_version="v1"
+    )
+
+    db.add(dataset_row)
+
+    db.commit()
+
+    return prediction_row

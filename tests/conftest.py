@@ -1,9 +1,13 @@
 import pytest
-from app.database import engine, Base
-from app import models
 
-@pytest.fixture(autouse=True)
-def create_tables():
+from app.database import Base, engine
+
+
+@pytest.fixture(scope="session", autouse=True)
+def prepare_database():
+    """
+    Vérifie que les tables existent.
+    Ne les supprime jamais.
+    """
     Base.metadata.create_all(bind=engine)
     yield
-    Base.metadata.drop_all(bind=engine)

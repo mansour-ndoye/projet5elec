@@ -1,33 +1,34 @@
 from fastapi import FastAPI, Depends
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
+import gradio as gr
 
 from app.schemas import BuildingInput
 from app.ml_model import predict_energy
-from app.database import get_db
+from app.database import Base, engine, get_db
 from app.crud import save_prediction
 from app.app_gradio import gradio_interface
-import gradio as gr
-from fastapi.responses import RedirectResponse
+
+# Création des tables si elles n'existent pas
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI(
     title="Seattle Energy Prediction API",
-    description="API permettant de prédire la consommation énergétique des bâtiments de Seattle.",
-    version="1.0.0"
+    description="API de prédiction de la consommation énergétique des bâtiments de Seattle.",
+    version="2.0.0"
 )
-from app.database import Base, engine
-from app import models
 
-Base.metadata.create_all(bind=engine)
 
 @app.get("/", include_in_schema=False)
 def home():
     return RedirectResponse(url="/gradio/")
 
-@app.post("/predict")
+
+@app.post("/predict", tags=["Prediction"])
 def predict(
     building: BuildingInput,
     db: Session = Depends(get_db)
 ):
-
     features = {
         "YearBuilt": building.YearBuilt,
         "BuildingAge": building.BuildingAge,
@@ -43,18 +44,21 @@ def predict(
     }
 
     prediction = predict_energy(features)
+
+    # Historisation dans Neon
     save_prediction(
         db=db,
         data=building,
         prediction=prediction
     )
 
-
     return {
         "prediction_kbtu": round(prediction, 2)
     }
+
+
+# Interface Gradio
 app = gr.mount_gradio_app(
     app,
     gradio_interface,
     path="/gradio"
-)
