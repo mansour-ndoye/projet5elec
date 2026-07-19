@@ -8,6 +8,8 @@ from app.ml_model import predict_energy
 from app.database import Base, engine, get_db
 from app.crud import save_prediction
 from app.app_gradio import gradio_interface
+from app.security import verify_api_key   # <-- AJOUT
+
 
 # Création des tables si elles n'existent pas
 Base.metadata.create_all(bind=engine)

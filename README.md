@@ -25,18 +25,18 @@ Toutes les prédictions sont enregistrées dans une base de données **SQLite** 
 
 # Technologies utilisées
 
-* Python 3.11
-* FastAPI
-* Gradio
-* Pydantic
-* Scikit-learn
-* Pandas
-* SQLAlchemy
-* SQLite
-* Hugging Face Hub
-* GitHub Actions
-* Pytest
-* Pytest-cov
+- Python 3.11
+- FastAPI
+- Gradio
+- Pydantic
+- SQLAlchemy
+- PostgreSQL (Neon)
+- Scikit-learn
+- Pandas
+- Joblib
+- Pytest
+- GitHub Actions
+- Hugging Face Spaces
 
 ---
 
@@ -45,6 +45,7 @@ Toutes les prédictions sont enregistrées dans une base de données **SQLite** 
 ```text
 projet5elec/
 
+│
 ├── app/
 │   ├── app_gradio.py
 │   ├── crud.py
@@ -53,7 +54,7 @@ projet5elec/
 │   ├── ml_model.py
 │   ├── models.py
 │   ├── schemas.py
-│   └── __init__.py
+│   └── security.py
 │
 ├── data/
 │   └── energie.ipynb
@@ -62,42 +63,102 @@ projet5elec/
 │
 ├── tests/
 │
-├── app.py
 ├── requirements.txt
-├── README.md
-└── .gitignore
+├── app.py
+└── README.md
 ```
+---
 
+# Architecture globale
+
+```
+                    Utilisateur
+                         │
+          ┌──────────────┴──────────────┐
+          │                             │
+          ▼                             ▼
+   Interface Gradio              API FastAPI
+          │                             │
+          │                             │
+          ▼                             ▼
+                Modèle Machine Learning
+                         │
+                         ▼
+              Random Forest Regressor
+                         │
+                         ▼
+             Base PostgreSQL (Neon)
+                         │
+                         ▼
+ Historisation des prédictions + Monitoring
+```
 ---
 
 # Modèle de Machine Learning
 
-Le modèle prédit :
-
-**SiteEnergyUse(kBtu)**
-
-Variables utilisées :
-
-* YearBuilt
-* BuildingAge
-* NumberofFloors
-* Log_Surface
-* PropertyGFATotal
-* LargestPropertyUseTypeGFA
-* PropertyGFABuilding(s)
-* BuildingType
-* PrimaryPropertyType
-* City
-* State
-
-Le modèle est un :
+Le modèle utilisé est :
 
 **RandomForestRegressor**
 
-Le fichier `model.pkl` est hébergé sur **Hugging Face Hub** puis téléchargé automatiquement grâce à :
+Variable cible :
 
-* huggingface_hub
-* joblib
+```
+SiteEnergyUse(kBtu)
+```
+
+Variables utilisées :
+
+- YearBuilt
+- BuildingAge
+- NumberofFloors
+- Log_Surface
+- PropertyGFATotal
+- LargestPropertyUseTypeGFA
+- PropertyGFABuilding_s
+- BuildingType
+- PrimaryPropertyType
+- City
+- State
+
+---
+
+# Base de données
+
+Le projet utilise **Neon PostgreSQL**.
+
+Trois tables permettent d'assurer la traçabilité complète.
+
+## predictions
+
+Historique complet des prédictions réalisées.
+
+## monitoring
+
+Temps de réponse du modèle.
+
+Version du modèle.
+
+Statut de la prédiction.
+
+## dataset
+
+Source des données.
+
+Version des données utilisées.
+
+---
+
+# Sécurité
+
+Les endpoints de prédiction sont protégés par une **API Key**.
+
+Chaque requête doit contenir :
+
+```
+X-API-Key: votre_api_key
+```
+
+L'API Key est stockée dans les variables d'environnement.
 
 ---
 
@@ -107,19 +168,20 @@ Cloner le dépôt :
 
 ```bash
 git clone https://github.com/mansour-ndoye/projet5elec.git
+
 cd projet5elec
 ```
 
 Créer un environnement virtuel :
 
-Windows :
+Windows
 
 ```bash
 python -m venv venv
 venv\Scripts\activate
 ```
 
-Linux / macOS :
+Linux
 
 ```bash
 python -m venv venv
@@ -134,41 +196,45 @@ pip install -r requirements.txt
 
 ---
 
-# Base de données
+# Variables d'environnement
 
-Le projet utilise **SQLite**.
+Créer un fichier `.env`
 
-La base est créée automatiquement au premier lancement.
+```
+DATABASE_URL=postgresql://...
 
-Aucune installation supplémentaire n'est nécessaire.
+API_KEY=xxxxxxxx
+
+HF_TOKEN=xxxxxxxx
+```
 
 ---
 
-# Lancement de l'application
-
-```bash
-python app.py
-```
-
-ou
+# Lancer l'API
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
+API disponible :
+
+```
+http://127.0.0.1:8000
+```
+
 ---
 
-# Documentation de l'API
+# Documentation
 
 Swagger :
 
-```text
+```
 http://127.0.0.1:8000/docs
 ```
 
 ReDoc :
 
-```text
+```
 http://127.0.0.1:8000/redoc
 ```
 
@@ -176,98 +242,111 @@ http://127.0.0.1:8000/redoc
 
 # Interface Gradio
 
-Lorsque l'application est déployée sur Hugging Face Spaces, une interface Gradio est disponible en complément de l'API.
+Accessible directement depuis :
 
-Elle permet de réaliser une prédiction directement depuis un navigateur.
+```
+http://127.0.0.1:8000/gradio
+```
 
 ---
 
 # Exemple d'appel API
 
-POST `/predict`
+```
+POST /predict
+```
+
+Header
+
+```
+X-API-Key: votre_api_key
+```
+
+Body
 
 ```json
 {
-  "YearBuilt": 1992,
-  "BuildingAge": 24,
-  "NumberofFloors": 3,
-  "Log_Surface": 13.111982,
-  "PropertyGFATotal": 494835,
-  "LargestPropertyUseTypeGFA": 757027,
-  "PropertyGFABuilding_s": 494835,
-  "BuildingType": "Campus",
-  "PrimaryPropertyType": "Mixed Use Property",
+  "YearBuilt": 2005,
+  "BuildingAge": 21,
+  "NumberofFloors": 5,
+  "Log_Surface": 11,
+  "PropertyGFATotal": 100000,
+  "LargestPropertyUseTypeGFA": 80000,
+  "PropertyGFABuilding_s": 95000,
+  "BuildingType": "NonResidential",
+  "PrimaryPropertyType": "Office",
   "City": "Seattle",
   "State": "WA"
 }
 ```
 
-Réponse :
+Réponse
 
 ```json
 {
-  "prediction_kbtu": 71888207.72
+    "prediction_kbtu": 123456.78
 }
 ```
 
 ---
 
-# Traçabilité des prédictions
-
-Chaque appel au endpoint `/predict` suit les étapes suivantes :
-
-1. Validation des données avec Pydantic.
-2. Création des variables d'entrée.
-3. Chargement du modèle Machine Learning.
-4. Calcul de la prédiction.
-5. Enregistrement de la prédiction dans SQLite.
-6. Retour de la réponse au client.
-
----
-
 # Tests
 
-Lancer tous les tests :
+Lancer les tests
 
 ```bash
 pytest
 ```
 
-Couverture :
+Couverture
 
 ```bash
 pytest --cov=app
 ```
 
-Tous les tests passent avec succès.
+---
+
+# Git
+
+Le projet suit une stratégie de branches :
+
+- master
+- dev
+- feature/database
+- feature/api
+- feature/model
+- feature/tests
+- feature/cicd
+
+Les versions sont identifiées par des **tags Git**.
+
+Exemple :
+
+```
+v1.0
+v1.1
+```
 
 ---
 
-# Déploiement CI/CD
+# CI/CD
 
-Le projet est déployé automatiquement grâce à GitHub Actions et Hugging Face Spaces.
+GitHub Actions permet automatiquement :
 
-À chaque `git push` :
-
-* les tests sont exécutés automatiquement ;
-* le projet est vérifié ;
-* Hugging Face redéploie automatiquement la nouvelle version de l'application.
-
-Cette approche met en œuvre une chaîne **CI/CD** garantissant la qualité et la disponibilité du projet.
+- exécution des tests
+- vérification du code
+- déploiement sur Hugging Face Spaces
 
 ---
 
 # Déploiement
 
-Le projet est disponible sur :
-
-* API FastAPI
-* Documentation Swagger
-* Interface Gradio
-* Hugging Face Hub pour le stockage du modèle
+Le projet est déployé automatiquement sur **Hugging Face Spaces** après validation des tests GitHub Actions.
 
 ---
 
 # Auteur
 
-Projet réalisé dans le cadre du parcours **OpenClassrooms – Ingénieur Intelligence Artificielle**.
+Projet réalisé dans le cadre de la formation
+
+**OpenClassrooms – Ingénieur Intelligence Artificielle**
