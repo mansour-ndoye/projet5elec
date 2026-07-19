@@ -29,7 +29,8 @@ def home():
 @app.post("/predict", tags=["Prediction"])
 def predict(
     building: BuildingInput,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key)
 ):
     features = {
         "YearBuilt": building.YearBuilt,
