@@ -44,16 +44,7 @@ def save_prediction(db, data, prediction):
 
     db.add(monitoring_row)
 
-    # -----------------------------
-    # Table dataset
-    # -----------------------------
-    dataset_row = Dataset(
-        prediction_id=prediction_row.prediction_id,
-        source="Seattle Open Data",
-        data_version="v1"
-    )
-
-    db.add(dataset_row)
+  
 
     db.commit()
 
