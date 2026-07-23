@@ -1,4 +1,3 @@
-from sqlalchemy.sql import func
 from sqlalchemy import (
     Column,
     Integer,
@@ -103,26 +102,66 @@ class Dataset(Base):
     dataset_id = Column(
         "dataset_id",
         Integer,
-        primary_key=True
+        primary_key=True,
+        index=True
     )
 
-    prediction_id = Column(
-        "prediction_id",
-        Integer,
-        ForeignKey("predictions.prediction_id")
+    YearBuilt = Column(
+        "yearbuilt",
+        Integer
     )
 
-    source = Column(
-        "source",
+    BuildingAge = Column(
+        "buildingage",
+        Integer
+    )
+
+    NumberofFloors = Column(
+        "numberoffloors",
+        Float
+    )
+
+    Log_Surface = Column(
+        "log_surface",
+        Float
+    )
+
+    PropertyGFATotal = Column(
+        "propertygfatotal",
+        Float
+    )
+
+    LargestPropertyUseTypeGFA = Column(
+        "largestpropertyusetypegfa",
+        Float
+    )
+
+    PropertyGFABuilding_s = Column(
+        "propertygfabuilding_s",
+        Float
+    )
+
+    BuildingType = Column(
+        "buildingtype",
         String
     )
 
-    data_version = Column(
-        "data_version",
+    PrimaryPropertyType = Column(
+        "primarypropertytype",
         String
     )
 
-    inserted_at = Column(
-        "inserted_at",
-        DateTime
+    City = Column(
+        "city",
+        String
+    )
+
+    State = Column(
+        "state",
+        String
+    )
+
+    SiteEnergyUse_kBtu = Column(
+        "siteenergyuse_kbtu",
+        Float
     )
